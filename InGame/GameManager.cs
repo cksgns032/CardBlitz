@@ -276,7 +276,7 @@ public class GameManager : SingleTon<GameManager>
         }
     }
     // 스폰위치에 유닛 소환
-    public void CreateHero(string objTag,Player obj, Team team)
+    public void CreateHero(string objTag, GameObject obj, Team team)
     {
         switch(objTag)
         {
@@ -297,10 +297,10 @@ public class GameManager : SingleTon<GameManager>
         // 오브젝트의 위치, 정보를 보냄
         TCPClient.Instance.CreateObj("DarkNight", objTag);
 
-        if (team == UserData.team)// 내 팀이 소환을 했을 때
+        /*if (team == UserData.team)// 내 팀이 소환을 했을 때
             allyList.Add(obj);
         else // 적 팀이 소환을 했을 때
-            enemyList.Add(obj);
+            enemyList.Add(obj);*/
     }
     public void DieHero(string team, Player obj)
     {

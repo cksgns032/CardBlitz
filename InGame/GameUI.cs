@@ -40,33 +40,6 @@ public class GameUI : MonoBehaviour
 
         cardGroup = gameObject.GetComponentInChildren<CardGroup>(true);
         cardGroup.Init();
-        /*Transform cardGroup = gameObject.transform.Find("CardGroup");
-        for(int i = 0; i < cardGroup.childCount; i++)
-        {
-            if(cardGroup.GetChild(i).GetComponent<Card>() != null)
-            {
-                string cardName = "";
-                switch (i)
-                {
-                    case 0:
-                        cardName = "Catcher_Small";
-                        break;
-                    case 1:
-                        cardName = "Catcher_Medium";
-                        break;
-                    case 2:
-                        cardName = "Catcher_Big";
-                        break;
-                    case 3:
-                        cardName = "Catcher_Small";
-                        break;
-                    case 4:
-                        cardName = "Catcher_Medium";
-                        break;
-                }
-                cardGroup.GetChild(i).GetComponent<Card>().Init(cardName);
-            }
-        }*/
     }
     //≈∏¿Ã∏”
     public void SetTime(float timeNum)

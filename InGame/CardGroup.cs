@@ -1,17 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
+using UnityEngine.WSA;
 
 public class CardGroup : MonoBehaviour
 {
     Card[] cards;
     List<Card> select;
+    //RectTransform cursorArrow;
     // Start is called before the first frame update
     public void Init()
     {
-        for(int i = 0; i < 3; i++)
+        //cursorArrow = transform.Find("CursorArrow").GetComponent<RectTransform>();
+        //카드 생성
+        for (int i = 0; i < 3; i++)
         {
             CardInfo cardInfo = new CardInfo();
             cardInfo.level = 1;
@@ -40,15 +47,24 @@ public class CardGroup : MonoBehaviour
     {
 
     }
+    /*public void CursorSet(PointerEventData eventData)
+    {
+        Vector2 currentPos = eventData.position;
+        cursorArrow.transform.position = currentPos;
+    }
+    public RectTransform GetCursor() 
+    {
+        return cursorArrow;
+    }*/
 
-    public void SelectCard(Card obj)
+    public int SelectCard(Card obj)
     {
         select = new List<Card>();
         select.Add(obj);
         obj.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(obj.gameObject.GetComponent<RectTransform>().localPosition.x,
                                                                        obj.gameObject.GetComponent<RectTransform>().localPosition.y + 60,
                                                                        obj.gameObject.GetComponent<RectTransform>().localPosition.z);
-
+        cursorArrow.anchoredPosition = obj.gameObject.GetComponent<RectTransform>().anchoredPosition;
         for (int i = 0; i < cards.Length; i++)
         {
             if(obj.gameObject == cards[i].gameObject)
@@ -154,10 +170,11 @@ public class CardGroup : MonoBehaviour
                 }
             }
         }
+        return select.Count;
     }
     public void DeSelect()
     {
-        for(int i = 0; i < select.Count; i++)
+        for (int i = 0; i < select.Count; i++)
         {
             select[i].gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(select[i].gameObject.GetComponent<RectTransform>().localPosition.x,
                                                                            select[i].gameObject.GetComponent<RectTransform>().localPosition.y-60,

@@ -5,45 +5,24 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.AI;
 using Unity.VisualScripting;
+using System;
+using BackEnd.Socketio;
 
-public class Card : MonoBehaviour, IPointerDownHandler,IPointerUpHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
+public class Card : MonoBehaviour, IPointerDownHandler,IPointerUpHandler, IEndDragHandler, IDragHandler
 {
     // 카드 데이터 받아 오기
     // 코스트, 타입, 공격력, 피, 이름
-    int cost;
-    int type;
-    int attack;
-    int hp;
     string cardName;
-
-    RawImage rawImg;
-    Player GameObj;// 프리펩 오브젝트
-    GameObject CharPos;
-    NavMeshAgent agent;
-    Animator ani;
-    Rigidbody rigid;
+    int getNum;
 
     CardInfo cardinfo;
     Image charImg;
     CardGroup cardGroup;
 
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        /*GameObj = Instantiate<Player>(Resources.Load<Player>("Prefabs/Monster/" + cardName));
-        GameObj.enabled = false;
-        //GameObj.GetComponent<Player>().enabled = false;
-        agent = GameObj.GetComponent<NavMeshAgent>();
-        agent.enabled = false;
-        ani = GameObj.GetComponentInChildren<Animator>();
-        if (ani != null) ani.enabled = false;
-        rawImg.transform.position = eventData.position;
-        GameObj.gameObject.transform.parent = CharPos.transform;
-        GameObj.gameObject.transform.position = CharPos.transform.position;*/
-    }
-
     public void OnDrag(PointerEventData eventData)
     {
-        //rawImg.transform.position = eventData.position;
+        /*Vector2 dir = eventData.position - (Vector2)cardGroup.GetCursor().transform.position;
+        cardGroup.GetCursor().transform.up = dir.normalized;*/
         SelectLine();
     }
 
@@ -71,8 +50,6 @@ public class Card : MonoBehaviour, IPointerDownHandler,IPointerUpHandler, IBegin
         charImg = gameObject.transform.GetChild(0).GetComponent<Image>();
         Sprite imga = Resources.Load<Sprite>("Image/Charactor/" + cardName);
         charImg.sprite = imga;
-        CharPos = GameObject.Find("CharPos");
-        rawImg = GameObject.FindObjectOfType<RawImage>();
     }
     public CardInfo GetCardInfo()
     {
@@ -86,17 +63,24 @@ public class Card : MonoBehaviour, IPointerDownHandler,IPointerUpHandler, IBegin
         
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
         {
-            //GameManager.Instance.CreateHero(hit.transform.gameObject.tag, GameObj, UserData.team);
+            string monName = "";
+            switch (getNum)
+            {
+                case 1:
+                    monName = cardName + "_Small";
+                    break;
+                case 2:
+                    monName = cardName + "_Medium";
+                    break;
+                case 3:
+                    monName = cardName + "_Big";
+                    break;
+            }
+            GameObject monObj = Instantiate<GameObject>(Resources.Load<GameObject>("Prefabs/Monster/" + monName));
+            GameManager.Instance.CreateHero(hit.transform.gameObject.tag, monObj, UserData.team);
             GameManager.Instance.ResetColor(hit.transform.gameObject.tag);
-            /*if (GameObj) GameObj.gameObject.transform.parent = null;
-            GameObj.enabled = true;
-            GameObj.Init();
-            GameObj.AgentMaskSet(hit.transform.gameObject.tag,UserData.team);*/
         }
-        else
-        {
-            //Destroy(GameObj.gameObject);
-        }
+        getNum = 0;
     }
     void SelectLine()
     {
@@ -113,7 +97,11 @@ public class Card : MonoBehaviour, IPointerDownHandler,IPointerUpHandler, IBegin
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        cardGroup.SelectCard(this);
+
+        /*cardGroup.CursorSet(eventData);
+        Vector2 dir = eventData.position - (Vector2)cardGroup.GetCursor().transform.position;
+        cardGroup.GetCursor().transform.up = dir.normalized;*/
+        getNum = cardGroup.SelectCard(this);
     }
     public void OnPointerUp(PointerEventData eventData)
     {
