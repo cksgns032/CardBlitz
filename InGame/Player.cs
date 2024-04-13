@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -19,7 +20,7 @@ public struct Hero
 
 public class Player : MonoBehaviour
 {
-    public GameObject damageObj;
+    GameObject damageObj;
 
     CapsuleCollider colder;
     NavMeshAgent agent;
@@ -36,6 +37,21 @@ public class Player : MonoBehaviour
 
     public void Init()
     {
+        Debug.Log(gameObject.name);
+        string size = gameObject.name.Split("_")[1].Split("(")[0];
+        damageObj = transform.Find("DamagePos").gameObject;
+        switch(size)
+        {
+            case "Small":
+                damageObj.transform.position = new Vector3(damageObj.transform.position.x,6, damageObj.transform.position.z);
+                break;
+            case "Medium":
+                damageObj.transform.position = new Vector3(damageObj.transform.position.x, 5, damageObj.transform.position.z);
+                break;
+            case "Big":
+                damageObj.transform.position = new Vector3(damageObj.transform.position.x, 4, damageObj.transform.position.z);
+                break;
+        }
         info.hp = 100;
         info.attack = 100;
         info.attackCnt = 1;
@@ -194,7 +210,7 @@ public class Player : MonoBehaviour
             agent.isStopped = true;
             agent.velocity = Vector3.zero;
             // 캐릭의 공격속도에 따라서 시간을 둬서 실행
-            ani.SetTrigger("Attack");
+            //ani.SetTrigger("Attack");
         }
     }
     void Go()

@@ -55,6 +55,10 @@ public class Card : MonoBehaviour, IPointerDownHandler,IPointerUpHandler, IEndDr
     {
         return cardinfo;
     }
+    public void ResetCardInfo()
+    {
+        cardinfo = null;
+    }
     void BtnClick()
     {
         RaycastHit hit;
@@ -76,9 +80,11 @@ public class Card : MonoBehaviour, IPointerDownHandler,IPointerUpHandler, IEndDr
                     monName = cardName + "_Big";
                     break;
             }
-            GameObject monObj = Instantiate<GameObject>(Resources.Load<GameObject>("Prefabs/Monster/" + monName));
-            GameManager.Instance.CreateHero(hit.transform.gameObject.tag, monObj, UserData.team);
+            /*Player monObj = Instantiate<Player>(Resources.Load<Player>("Prefabs/Monster/" + monName));
+            monObj.Init();*/
+            GameManager.Instance.CreateHero(hit.transform.gameObject.tag, monName, UserData.team);
             GameManager.Instance.ResetColor(hit.transform.gameObject.tag);
+            cardGroup.UseCard();
         }
         getNum = 0;
     }
@@ -97,7 +103,6 @@ public class Card : MonoBehaviour, IPointerDownHandler,IPointerUpHandler, IEndDr
 
     public void OnPointerDown(PointerEventData eventData)
     {
-
         /*cardGroup.CursorSet(eventData);
         Vector2 dir = eventData.position - (Vector2)cardGroup.GetCursor().transform.position;
         cardGroup.GetCursor().transform.up = dir.normalized;*/

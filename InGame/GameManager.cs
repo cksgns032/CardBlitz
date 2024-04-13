@@ -64,8 +64,8 @@ public class GameManager : SingleTon<GameManager>
         gameUI = GameObject.FindObjectOfType<GameUI>();
         gameUI.Init();
         gameUI.SetTime(timeNum);
-        GameObject mapPos = GameObject.Find("MapPos"); 
-        map = Instantiate<GameObject>(Resources.Load<GameObject>("Prefabs/Map"),mapPos.GetComponent<Transform>());
+        //GameObject mapPos = GameObject.Find("MapPos"); 
+        map = Instantiate<GameObject>(Resources.Load<GameObject>("Prefabs/Map"));//mapPos.GetComponent<Transform>()
         for (int k = 0; k < map.GetComponentsInChildren<EventButton>().Length; k++)
         {
             map.GetComponentsInChildren<EventButton>()[k].Init();
@@ -276,31 +276,36 @@ public class GameManager : SingleTon<GameManager>
         }
     }
     // 스폰위치에 유닛 소환
-    public void CreateHero(string objTag, GameObject obj, Team team)
+    public void CreateHero(string objTag, string objName, Team team)
     {
-        switch(objTag)
+        Player monObj = Instantiate<Player>(Resources.Load<Player>("Prefabs/Monster/" + objName));
+        monObj.gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        switch (objTag)
         {
             case "TOP":
                 Vector3 pos = map.transform.Find("SpawnPos/TopPotal").transform.position;
-                obj.gameObject.transform.position = new Vector3(pos.x, 1.2f, pos.z);
+                monObj.gameObject.transform.position = new Vector3(pos.x, 1.2f, pos.z);
                 break;
             case "MIDDLE":
                 pos = map.transform.Find("SpawnPos/MiddlePotal").transform.position;
-                obj.gameObject.transform.position = new Vector3(pos.x, 1.2f, pos.z);
+                monObj.gameObject.transform.position = new Vector3(pos.x, 1.2f, pos.z);
                 break;
             case "BOTTOM":
                 pos = map.transform.Find("SpawnPos/BottomPotal").transform.position;
-                obj.gameObject.transform.position = new Vector3(pos.x, 1.2f, pos.z);
+                monObj.gameObject.transform.position = new Vector3(pos.x, 1.2f, pos.z);
                 break;
         }
-        obj.gameObject.layer = LayerMask.NameToLayer("HERO");
+        //player.AgentMaskSet(arr[1], team);
+        monObj.gameObject.layer = LayerMask.NameToLayer("HERO");
+        monObj.Init();
+        monObj.AgentMaskSet(objTag, team);
         // 오브젝트의 위치, 정보를 보냄
-        TCPClient.Instance.CreateObj("DarkNight", objTag);
+        //TCPClient.Instance.CreateObj("DarkNight", objTag);
 
-        /*if (team == UserData.team)// 내 팀이 소환을 했을 때
-            allyList.Add(obj);
+        if (team == UserData.team)// 내 팀이 소환을 했을 때
+            allyList.Add(monObj);
         else // 적 팀이 소환을 했을 때
-            enemyList.Add(obj);*/
+            enemyList.Add(monObj);
     }
     public void DieHero(string team, Player obj)
     {

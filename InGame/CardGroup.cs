@@ -33,6 +33,8 @@ public class CardGroup : MonoBehaviour
     {
         for (var i = 0; i < cards.Length; i++)
         {
+            if (cards[i].gameObject.active == false)
+                cards[i].gameObject.SetActive(true);
             int num = UnityEngine.Random.Range(0, UserData.gameDeck.Count);
             cards[i].Setting(UserData.gameDeck[num]);
         }
@@ -64,7 +66,7 @@ public class CardGroup : MonoBehaviour
         obj.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(obj.gameObject.GetComponent<RectTransform>().localPosition.x,
                                                                        obj.gameObject.GetComponent<RectTransform>().localPosition.y + 60,
                                                                        obj.gameObject.GetComponent<RectTransform>().localPosition.z);
-        cursorArrow.anchoredPosition = obj.gameObject.GetComponent<RectTransform>().anchoredPosition;
+        //cursorArrow.anchoredPosition = obj.gameObject.GetComponent<RectTransform>().anchoredPosition;
         for (int i = 0; i < cards.Length; i++)
         {
             if(obj.gameObject == cards[i].gameObject)
@@ -84,7 +86,7 @@ public class CardGroup : MonoBehaviour
                 if (i-1>=0)
                 {
                     //CardInfo card = cards[i - 1].GetCardInfo();
-                    if(obj.GetCardInfo().id == cards[i - 1].GetCardInfo().id)
+                    if (cards[i-1].GetCardInfo() != null && obj.GetCardInfo().id == cards[i - 1].GetCardInfo().id)
                     {
                         cards[i - 1].gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(cards[i - 1].gameObject.GetComponent<RectTransform>().localPosition.x,
                                                                        cards[i - 1].gameObject.GetComponent<RectTransform>().localPosition.y + 60,
@@ -97,7 +99,7 @@ public class CardGroup : MonoBehaviour
                 // 오른쪽 확인
                 if (i + 1 < 5)
                 {
-                    if (obj.GetCardInfo().id == cards[i + 1].GetCardInfo().id)
+                    if (cards[i + 1].GetCardInfo() != null && obj.GetCardInfo().id == cards[i + 1].GetCardInfo().id)
                     {
                         cards[i + 1].gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(cards[i + 1].gameObject.GetComponent<RectTransform>().localPosition.x,
                                                                        cards[i + 1].gameObject.GetComponent<RectTransform>().localPosition.y + 60,
@@ -115,7 +117,7 @@ public class CardGroup : MonoBehaviour
                     if (cards[i + 2] != null)
                     {
                         //CardInfo card = cards[i + 2].GetCardInfo();
-                        if (obj.GetCardInfo().id == cards[i + 2].GetCardInfo().id)
+                        if (cards[i + 2].GetCardInfo() != null && obj.GetCardInfo().id == cards[i + 2].GetCardInfo().id)
                         {
                             cards[i + 2].gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(cards[i + 2].gameObject.GetComponent<RectTransform>().localPosition.x,
                                                                            cards[i + 2].gameObject.GetComponent<RectTransform>().localPosition.y + 60,
@@ -129,7 +131,7 @@ public class CardGroup : MonoBehaviour
                 {
                     if (cards[i - 2] != null)
                     {
-                        if (obj.GetCardInfo().id == cards[i - 2].GetCardInfo().id)
+                        if (cards[i - 2].GetCardInfo() != null && obj.GetCardInfo().id == cards[i - 2].GetCardInfo().id)
                         {
                             cards[i - 2].gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(cards[i - 2].gameObject.GetComponent<RectTransform>().localPosition.x,
                                                                            cards[i - 2].gameObject.GetComponent<RectTransform>().localPosition.y + 60,
@@ -145,7 +147,7 @@ public class CardGroup : MonoBehaviour
                     {
                         if(i-2 >= 0)
                         {
-                            if (obj.GetCardInfo().id == cards[i - 2].GetCardInfo().id)
+                            if (cards[i - 2].GetCardInfo() != null && obj.GetCardInfo().id == cards[i - 2].GetCardInfo().id)
                             {
                                 cards[i - 2].gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(cards[i - 2].gameObject.GetComponent<RectTransform>().localPosition.x,
                                                                                cards[i - 2].gameObject.GetComponent<RectTransform>().localPosition.y + 60,
@@ -158,7 +160,7 @@ public class CardGroup : MonoBehaviour
                     {
                         if(i+2 < 5)
                         {
-                            if (obj.GetCardInfo().id == cards[i + 2].GetCardInfo().id)
+                            if (cards[i + 2].GetCardInfo() != null && obj.GetCardInfo().id == cards[i + 2].GetCardInfo().id)
                             {
                                 cards[i + 2].gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(cards[i + 2].gameObject.GetComponent<RectTransform>().localPosition.x,
                                                                                cards[i + 2].gameObject.GetComponent<RectTransform>().localPosition.y + 60,
@@ -174,11 +176,41 @@ public class CardGroup : MonoBehaviour
     }
     public void DeSelect()
     {
+        // 선택한 카드 삭제
         for (int i = 0; i < select.Count; i++)
         {
             select[i].gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(select[i].gameObject.GetComponent<RectTransform>().localPosition.x,
-                                                                           select[i].gameObject.GetComponent<RectTransform>().localPosition.y-60,
+                                                                           select[i].gameObject.GetComponent<RectTransform>().localPosition.y - 60,
                                                                            select[i].gameObject.GetComponent<RectTransform>().localPosition.z);
+        }
+    }
+    public void UseCard()
+    {
+        for (int k = 0; k < select.Count; k++)
+        {
+            select[k].gameObject.SetActive(false);
+        }
+        // 미사용 카드 정렬
+        for (var j = 0; j < cards.Length - 1; j++)
+        {
+            if (cards[j].gameObject.active == true && cards[j + 1].gameObject.active == false)
+            {
+                cards[j + 1].gameObject.SetActive(true);
+                cards[j + 1].Setting(cards[j].GetCardInfo());
+                cards[j].gameObject.SetActive(false);
+                cards[j].ResetCardInfo();
+                for (int i = j; i >= 0; i--)
+                {
+                    if (cards[i].gameObject.active == true)
+                    {
+                        cards[i + 1].gameObject.SetActive(true);
+                        cards[i + 1].Setting(cards[i].GetCardInfo());
+                        cards[i].gameObject.SetActive(false);
+                        cards[i].ResetCardInfo();
+                    }
+                }
+                //j = -1;
+            }
         }
     }
 }
